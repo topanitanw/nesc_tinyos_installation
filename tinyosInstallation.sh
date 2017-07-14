@@ -10,60 +10,45 @@
 #
 #
 # Author: Panitan Wongse-ammat 2/4/2016
-sudo -s
-apt-get update
+
+cd ~/Download
+sudo apt-get update
 # add the repositories signing key to APT's keyring.  Needed to verify
 # the repository
-wget -O - http://tinyprod.net/repos/debian/tinyprod.key |  apt-key add -
-apt-get install emacs24 vim-gnome
-apt-get install build-essential stow automake autoconf libtool libc6-dev
+sudo apt-get -y install emacs24 vim-gnome
 # git installation 
-apt-get install git gitk git-core git-daemon-run git-doc git-email git-gui gitmagic
+sudo apt-get -y install git gitk git-core git-daemon-run git-doc git-email git-gui gitmagic
+# Python 2
+sudo apt-get -y install build-essential python-dev
+sudo apt-get -y install default-jdk
+# for anaconda mode in emacs
+sudo apt-get -y install python-pip
+pip install -U pip setuptools
 # TinyOS toolchain & Dependency
-apt-get install default-jdk build-essential automake bison flex gperf git stow automake autoconf libtool libc6-dev
-apt-get install openssh-client openssh-server
-apt-get install python3 python3-serial python python-serial
-echo "deb http://tinyprod.net/repos/debian squeeze main"   >> /etc/apt/sources.list.d/tinyprod-debian.list
-echo "deb http://tinyprod.net/repos/debian msp430-46 main" >> /etc/apt/sources.list.d/tinyprod-debian.list
-apt-get update
-apt-get install nesc tinyos-tools msp430-46 mspdebug
-cd /opt
-# install the nesc
+sudo apt-get -y install default-jdk build-essential automake bison flex gperf stow automake autoconf libtool libc6-dev
+# Tiny OS and Nesc Installation
 git clone https://github.com/tinyos/nesc.git
 cd /nesc
-chmod 777 .
 ./Bootstrap
 ./configure
-make
-make install
+sudo make
+sudo make install
+cd ..
 # install the tinyOS
-git clone -o tos -v git://github.com/tinyos/tinyos-main tinyos-2.x
-cd /opt/tinyos-2.x
-chmod 777 .
-cd /opt/tinyos-2.x/tools
+git clone https://github.com/tinyos/tinyos-main.git
+cd /tinyos-main/tools
 ./Bootstrap
 ./configure
-make
-make install
-cd ~
-echo ""
-echo "TinyOS Installation"
-echo "MOTECOM=\"serial@/dev/ttyUSB0:telosb\"" >> .bashrc
-echo "TOSROOT=~/top/t2_cur/tinyos-2.x" >> .bashrc
-echo "TOSDIR=$TOSROOT/tos" >> .bashrc
-echo "MAKERULES=$TOSROOT/support/make/Makerules" >> .bashrc
-echo "CLASSPATH=.:$TOSROOT/support/sdk/java/tinyos.jar" >> .bashrc
-echo "PYTHONPATH=$TOSROOT/support/sdk/python:$PYTHONPATH" >> .bashrc
-echo "export MAKERULES TOSDIR TOSROOT CLASSPATH PYTHONPATH" >> .bashrc
-echo "export MOTECOM" >> .bashrc
-source ~/.bashrc
-cd /opt/tinyos-2.x/apps/Blink
-chmod 777 .
+sudo make
+sudo make install
+cd ..
+
+cd ~/Download/tinyos-main/apps/Blink
 make telosb
 if [ $? -eq 0]; then
     echo "---"
     echo "+++ TinyOS and nesc are installed successfully"
-    echo "+++ in the /opt/tinyos-2.x and in the /opt/nesc"
+    echo "+++ in the ~/Download/tinyos-main and in the ~/Download/nesc"
 else
     echo "---"
     echo "+++ TinyOS is installed unsuccessfully"
